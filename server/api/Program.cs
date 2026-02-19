@@ -1,3 +1,4 @@
+using api.Services;
 using EfScaffold.Entities;
 using Infrastructure.Sqlite.Scaffolding;
 using Microsoft.AspNetCore.Mvc;
@@ -13,6 +14,9 @@ builder.Services.AddDbContext<MyDbContext>(conf =>
         conf.UseSqlite(connectionString);
     }
 );
+builder.Services.AddScoped<ITodoService, TodoService>();
+builder.Services.AddControllers();
+builder.Services.AddOpenApiDocument();
 
 var app = builder.Build();
 
@@ -20,4 +24,7 @@ app.MapGet("/", ([FromServices]MyDbContext dbContext) => {
     return dbContext.Todos.ToList<Todo>(); 
 });
 
+app.MapControllers();
+app.UseOpenApi(); 
+app.UseSwaggerUi();
 app.Run();
