@@ -1,4 +1,4 @@
-﻿namespace efscaffold;
+﻿namespace EfScaffold;
 
 public class Class1
 {
