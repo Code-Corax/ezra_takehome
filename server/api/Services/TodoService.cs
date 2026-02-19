@@ -45,9 +45,9 @@ public class TodoService(MyDbContext dbContext) : ITodoService
         return currentObject;
     } 
 
-    public async Task<Todo> UpdateTodo(UpdateTodoDto toUpdate)
+    public async Task<Todo> UpdateTodo(string id, UpdateTodoDto toUpdate)
     {
-        var currentObject = dbContext.Todos.FirstOrDefault(t => t.Id == toUpdate.id) ?? throw new ValidationException("Id " + toUpdate.id + " could not be found.");
+        var currentObject = dbContext.Todos.FirstOrDefault(t => t.Id == id) ?? throw new ValidationException("Id " + id + " could not be found.");
         currentObject.Description = toUpdate.description;
         currentObject.Priority = toUpdate.priority;
         currentObject.IsDone = toUpdate.isDone;

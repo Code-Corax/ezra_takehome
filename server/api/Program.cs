@@ -24,6 +24,13 @@ app.MapGet("/", ([FromServices]MyDbContext dbContext) => {
     return dbContext.Todos.ToList<Todo>(); 
 });
 
+//TODO: is this a safe domain set to allow for cors? seems quite open...
+app.UseCors(config => config
+    .AllowAnyHeader()
+    .AllowAnyMethod()
+    .AllowAnyOrigin()
+    .SetIsOriginAllowed(x => true));
+
 app.MapControllers();
 app.UseOpenApi(); 
 app.UseSwaggerUi();

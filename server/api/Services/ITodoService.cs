@@ -12,5 +12,5 @@ public interface ITodoService
 
     Task<Todo> ToggleTodo(Todo toToggle);
 
-    Task<Todo> UpdateTodo(UpdateTodoDto toToggle);
+    Task<Todo> UpdateTodo(string id, UpdateTodoDto toToggle);
 }
