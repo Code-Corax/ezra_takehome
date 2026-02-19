@@ -1,6 +1,23 @@
+using EfScaffold.Entities;
+using Infrastructure.Sqlite.Scaffolding;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
+
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+      ?? throw new InvalidOperationException("ConnectionStrings:DefaultConnection is not configured.");
+
+builder.Services.AddDbContext<MyDbContext>(conf =>
+    {
+        conf.UseSqlite(connectionString);
+    }
+);
+
 var app = builder.Build();
 
-app.MapGet("/", () => "Hello World!");
+app.MapGet("/", ([FromServices]MyDbContext dbContext) => {
+    return dbContext.Todos.ToList<Todo>(); 
+});
 
 app.Run();
