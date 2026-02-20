@@ -20,11 +20,11 @@ public class TodoController(ITodoService todoService) : ControllerBase
     return await todoService.CreateTodo(dto);
     }
 
-    [Route(nameof(DeleteTodo))]
-    [HttpDelete]
-    public async Task<ActionResult<Todo>> DeleteTodo([FromBody]Todo toDelete)
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteTodo([FromRoute] string id)
     {
-        return await todoService.DeleteTodo(toDelete);
+        await todoService.DeleteTodo(id);
+        return NoContent(); //204
         
     }
 

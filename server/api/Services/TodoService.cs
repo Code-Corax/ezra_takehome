@@ -27,13 +27,11 @@ public class TodoService(MyDbContext dbContext) : ITodoService
         return toCreate;
     }
 
-    public async Task<Todo> DeleteTodo(Todo todo)
+    public async Task DeleteTodo(string id)
     {
-        var toDelete = dbContext.Todos.FirstOrDefault(t => t.Id == todo.Id) ?? throw new ValidationException("Id " + todo.Id + " could not be found.");
-        dbContext.Todos.Attach(toDelete);
+        var toDelete = dbContext.Todos.FirstOrDefault(t => t.Id == id) ?? throw new ValidationException("Id " + id+ " could not be found.");
         dbContext.Todos.Remove(toDelete);
         dbContext.SaveChanges();
-        return toDelete;
     }
 
     public async Task<Todo> ToggleTodo(Todo toToggle)

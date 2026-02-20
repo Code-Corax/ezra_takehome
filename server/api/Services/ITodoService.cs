@@ -8,7 +8,7 @@ public interface ITodoService
 
     Task<Todo> CreateTodo(CreateTodoDto dto);
 
-    Task<Todo> DeleteTodo(Todo toDelete);
+    Task DeleteTodo(string id);
 
     Task<Todo> ToggleTodo(Todo toToggle);
 
