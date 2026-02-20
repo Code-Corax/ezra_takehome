@@ -4,7 +4,7 @@ public record TodoResponseDto(
 
     string title,
 
-    string description,
+    string? description,
 
     bool isDone,
 

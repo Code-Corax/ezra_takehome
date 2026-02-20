@@ -18,19 +18,26 @@ builder.Services.AddScoped<ITodoService, TodoService>();
 builder.Services.AddControllers();
 builder.Services.AddOpenApiDocument();
 
+var corsOrigins = builder.Configuration.GetSection("Cors:Origins").Get<string[]>() ?? Array.Empty<string>();
+
+builder.Services.AddCors(options =>
+  {
+      options.AddPolicy("ApiCors", policy =>
+      {
+          policy.WithOrigins(corsOrigins)
+                .WithMethods("GET", "POST", "PUT", "PATCH", "DELETE")
+                .WithHeaders("Content-Type");
+      });
+  });
+
 var app = builder.Build();
 
 app.MapGet("/", ([FromServices]MyDbContext dbContext) => {
     return dbContext.Todos.ToList<Todo>(); 
 });
 
-//TODO: is this a safe domain set to allow for cors? seems quite open...
-app.UseCors(config => config
-    .AllowAnyHeader()
-    .AllowAnyMethod()
-    .AllowAnyOrigin()
-    .SetIsOriginAllowed(x => true));
-
+app.UseCors("ApiCors");
+app.UseMiddleware<ExceptionMappingMiddleware>();
 app.MapControllers();
 app.UseOpenApi(); 
 app.UseSwaggerUi();
