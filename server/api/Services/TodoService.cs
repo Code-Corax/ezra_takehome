@@ -29,23 +29,27 @@ public class TodoService(MyDbContext dbContext) : ITodoService
 
     public async Task DeleteTodo(string id)
     {
-        var toDelete = dbContext.Todos.FirstOrDefault(t => t.Id == id) ?? throw new ValidationException("Id " + id+ " could not be found.");
+        var toDelete = GetTodoByIdOrThrow(id);
         dbContext.Todos.Remove(toDelete);
         dbContext.SaveChanges();
     }
 
-    public async Task<Todo> ToggleTodo(Todo toToggle)
+    public async Task<Todo> UpdateIsDone(string id, bool isDoneValue)
     {
-        var currentObject = dbContext.Todos.FirstOrDefault(t => t.Id == toToggle.Id) ?? throw new ValidationException("Id " + toToggle.Id + " could not be found.");
-        currentObject.IsDone = !toToggle.IsDone;
-        dbContext.Todos.Update(currentObject);
-        dbContext.SaveChanges();
+        var currentObject = GetTodoByIdOrThrow(id);
+
+        if(currentObject.IsDone != isDoneValue)
+        {
+            currentObject.IsDone = isDoneValue;
+            dbContext.Todos.Update(currentObject);
+            dbContext.SaveChanges();
+        }        
         return currentObject;
     } 
 
     public async Task<Todo> UpdateTodo(string id, UpdateTodoDto toUpdate)
     {
-        var currentObject = dbContext.Todos.FirstOrDefault(t => t.Id == id) ?? throw new ValidationException("Id " + id + " could not be found.");
+        var currentObject = GetTodoByIdOrThrow(id);
         currentObject.Description = toUpdate.description;
         currentObject.Priority = toUpdate.priority;
         currentObject.IsDone = toUpdate.isDone;
@@ -53,5 +57,10 @@ public class TodoService(MyDbContext dbContext) : ITodoService
         dbContext.Todos.Update(currentObject);
         dbContext.SaveChanges();
         return currentObject;
+    }
+
+    private Todo GetTodoByIdOrThrow(string id)
+    {
+        return dbContext.Todos.FirstOrDefault(t => t.Id == id) ?? throw new ValidationException("Id " + id + " could not be found.");
     }
 }

@@ -6,18 +6,20 @@ using Microsoft.AspNetCore.Mvc;
 [Route("todos")]
 public class TodoController(ITodoService todoService) : ControllerBase
 {
-    [Route(nameof(GetAllTodos))]
     [HttpGet]
-    public async Task<ActionResult<List<Todo>>> GetAllTodos()
+    public async Task<ActionResult<List<TodoResponseDto>>> GetAllTodos()
     {
-        return await todoService.GetAllTodos();
+        var responseTodos = await todoService.GetAllTodos();
+        return responseTodos
+            .Select(x => ConvertTodoToResponseDto(x) )
+            .ToList();
     }
 
-    [Route(nameof(CreateTodo))] 
     [HttpPost]
-    public async Task<ActionResult<Todo>> CreateTodo([FromBody] CreateTodoDto dto)
+    public async Task<ActionResult<TodoResponseDto>> CreateTodo([FromBody] CreateTodoDto dto)
     {
-    return await todoService.CreateTodo(dto);
+        var responseTodo = await todoService.CreateTodo(dto);
+        return ConvertTodoToResponseDto(responseTodo);
     }
 
     [HttpDelete("{id}")]
@@ -28,17 +30,30 @@ public class TodoController(ITodoService todoService) : ControllerBase
         
     }
 
-    [Route(nameof(ToggleDone))]
-    [HttpPut] //Todo: validate that put is the right, instead of post
-    public async Task<ActionResult<Todo>> ToggleDone([FromBody] Todo toToggle)
+    [HttpPatch("{id}")]
+    public async Task<ActionResult<TodoResponseDto>> UpdateIsDone([FromRoute] string id, [FromBody] IsDoneUpdateDto isDoneUpdate)
     {
-        return await todoService.ToggleTodo(toToggle);
+        var responseTodo = await todoService.UpdateIsDone(id, isDoneUpdate.isDone);
+        return ConvertTodoToResponseDto(responseTodo);
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult<Todo>> UpdateTodo([FromRoute] string id, [FromBody] UpdateTodoDto toUpdate)
+    public async Task<ActionResult<TodoResponseDto>> UpdateTodo([FromRoute] string id, [FromBody] UpdateTodoDto toUpdate)
     {
-        return await todoService.UpdateTodo(id, toUpdate);
+        var responseTodo = await todoService.UpdateTodo(id, toUpdate);
+        return ConvertTodoToResponseDto(responseTodo);
+    }
+
+    private TodoResponseDto ConvertTodoToResponseDto(Todo toConvert)
+    {
+        return new TodoResponseDto(
+            id: toConvert.Id,
+            title: toConvert.Title,
+            description: toConvert.Description,
+            isDone: toConvert.IsDone,
+            priority: toConvert.Priority,
+            dateCreated: toConvert.DateCreated
+        );
     }
 
 }

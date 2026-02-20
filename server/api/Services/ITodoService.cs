@@ -10,7 +10,7 @@ public interface ITodoService
 
     Task DeleteTodo(string id);
 
-    Task<Todo> ToggleTodo(Todo toToggle);
+    Task<Todo> UpdateIsDone(string id, bool isDoneValue);
 
-    Task<Todo> UpdateTodo(string id, UpdateTodoDto toToggle);
+    Task<Todo> UpdateTodo(string id, UpdateTodoDto toUpdate);
 }
