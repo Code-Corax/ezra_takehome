@@ -14,7 +14,7 @@ const http = axios.create({
 
 export async function getAllTodos(): Promise<Todo[]> {
     try {
-        const { data } = await http.get<Todo[]>('/todos/GetAllTodos')
+        const { data } = await http.get<Todo[]>('/todos')
         return data
     } catch (error) {
         throw toApiError(error)

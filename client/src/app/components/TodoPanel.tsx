@@ -1,5 +1,7 @@
 import styled from "styled-components";
 import themes from '../utils/themes';
+import TodoPanelHeader from "./TodoPanelHeader";
+import TodoPanelBody from "./TodoPanelBody";
 
 interface Props {
     todos: Array<object>;
@@ -12,13 +14,10 @@ function TodoPanel({todos}: Props) {
 
     return (
         <TodoPanelStyled theme={theme}>
-            <div className="header-area">
-                <h1>Tasks</h1>
-            </div>
-            <div>{JSON.stringify(todos)}</div>
+            <TodoPanelHeader />
+            <TodoPanelBody todos={todos} />
         </TodoPanelStyled>
     )
-
 }
 
 const TodoPanelStyled = styled.div`
@@ -38,24 +37,7 @@ const TodoPanelStyled = styled.div`
     .tasks {
         margin: 2rem 0;
     }
-        
-    .header-area h1 {
-        font-size: clamp(1.5rem, 2vw, 2rem);
-        font-weight: 800;
-        position: relative;
 
-        &::after {
-            content: "";
-            position: absolute;
-            bottom: -0.5rem;
-            left: 0;
-            width: 3rem;
-            height: 0.2rem;
-            background-color: ${(props) => props.theme.colorPrimaryGreen}; 
-            border-radius: 0.5rem;
-        }
-    }
-    
     .create-task {
         display: flex;
         align-items: center;
