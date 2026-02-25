@@ -34,11 +34,12 @@ jobs:
         run: dotnet build server.slnx --configuration Release --no-restore
 
       - name: Test
-        run: dotnet test api.Tests/api.Tests.csproj --configuration Release --no-build --logger "trx;LogFileName=test-results.trx"
+        run: dotnet test api.Tests/api.Tests.csproj --configuration Release --no-build --logger "trx;LogFileName=test-results.trx" --results-directory ./TestResults
 
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: server-test-results
-          path: server/api.Tests/TestResults/**/*.trx
+          path: server/TestResults/**/*.trx
+          if-no-files-found: warn
