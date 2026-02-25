@@ -42,7 +42,6 @@ public class TodoService(MyDbContext dbContext) : ITodoService
         if(currentObject.IsDone != isDoneValue)
         {
             currentObject.IsDone = isDoneValue;
-            dbContext.Todos.Update(currentObject);
             await dbContext.SaveChangesAsync();
         }        
         return currentObject;
@@ -55,7 +54,6 @@ public class TodoService(MyDbContext dbContext) : ITodoService
         currentObject.Priority = toUpdate.priority;
         currentObject.IsDone = toUpdate.isDone;
         currentObject.Title = toUpdate.title;
-        dbContext.Todos.Update(currentObject);
         await dbContext.SaveChangesAsync();
         return currentObject;
     }

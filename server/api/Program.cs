@@ -32,9 +32,29 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-app.MapGet("/", ([FromServices]MyDbContext dbContext) => {
-    return dbContext.Todos.ToList<Todo>(); 
+app.MapGet("/", async ([FromServices]MyDbContext dbContext) => {
+    var todos = await dbContext.Todos
+          .Select(t => new TodoResponseDto(
+              id: t.Id,
+              title: t.Title,
+              description: t.Description,
+              isDone: t.IsDone,
+              priority: t.Priority,
+              dateCreated: t.DateCreated
+          ))
+          .ToListAsync();
+
+      return Results.Ok(todos);
 });
+
+// Test-only endpoint to deterministically verify 500 ProblemDetails mapping.
+if (app.Environment.IsEnvironment("Testing"))
+{
+    app.MapGet("/__test/throw-500", () =>
+    {
+        throw new InvalidOperationException("Deterministic test exception");
+    });
+}
 
 app.UseCors("ApiCors");
 app.UseMiddleware<ExceptionMappingMiddleware>();
@@ -42,3 +62,5 @@ app.MapControllers();
 app.UseOpenApi(); 
 app.UseSwaggerUi();
 app.Run();
+
+public partial class Program { }
