@@ -1,5 +1,5 @@
  <Solution>
   <Project Path="api.Tests/api.Tests.csproj" />
   <Project Path="api/api.csproj" />
-  <Project Path="EfScaffold/efscaffold.csproj" />
+  <Project Path="efscaffold/efscaffold.csproj" />
 </Solution>
