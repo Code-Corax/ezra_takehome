@@ -36,10 +36,17 @@ jobs:
       - name: Test
         run: dotnet test api.Tests/api.Tests.csproj --configuration Release --no-build --logger "trx;LogFileName=test-results.trx" --results-directory ./TestResults
 
+      - name: Debug test result paths
+        if: always()
+        run: |
+          pwd
+          find . -type d -name "TestResults" -print
+          find . -type f -name "*.trx" -print
+
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: server-test-results
-          path: server/TestResults/**/*.trx
+          path: "**/TestResults/**/*.trx"
           if-no-files-found: warn
