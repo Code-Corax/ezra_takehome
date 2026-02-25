@@ -19,3 +19,7 @@ export type Todo = {
     priority: number
     isDone: boolean
   }
+
+  export type ToggleIsDoneInput = {
+    isDone:  boolean
+  }

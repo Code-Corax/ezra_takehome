@@ -1,43 +1,67 @@
-import { useState, useEffect } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import './App.css';
-import type { Todo } from './app/api/todoApiModels';
-import { getAllTodos } from './app/api/todosApi';
 import SidePanel from './app/components/SidePanel';
 import TodoPanel from './app/components/TodoPanel';
 import styled from "styled-components";
-
+import { getAllTodosThunk } from './app/todoSlice';
+import { useAppDispatch, useAppSelector } from './app/hooks';
+import { toaster } from './components/ui/toaster-instance';
+import { clearError } from "./app/todoSlice";
+import type { TodoFilter } from './app/utils/TodoFilter';
 
 function App() {
-  const [data, setData] = useState<Todo[] | null>(null),
-    [loading, setLoading] = useState(true),
-    [error, setError] = useState<string | null>(null);
+  const status = useAppSelector((s) => s.todos.status),
+    error = useAppSelector((s) => s.todos.error);
+
+  const dispatch = useAppDispatch();
+
+  const [activeFilter, setActiveFilter] = useState<TodoFilter>("all");
 
   useEffect(() => {
-    (async () => {
-      try {
-        const res = await getAllTodos();
-        setData(res);
-      } catch (e) {
-        setError(e instanceof Error ? e.message : 'An error has occured while attempting to fetch for base page.');
-      } finally {
-        setLoading(false);
-      }
-    })()
-  }, [])
+    if (status === "idle") {
+      dispatch(getAllTodosThunk());
+    }
+  }, [status, dispatch]);
+
+  useEffect(() => {
+    if (!error) return;
+
+    toaster.create({
+      type: "error",
+      title: "Request failed",
+      description: error,
+      closable: true,
+    });
+
+    dispatch(clearError());
+  }, [error, dispatch]);
+
+  const todos = useAppSelector((s) => s.todos.todos);
+
+  const filteredTodos = useMemo(() => {
+    switch (activeFilter) {
+      case "complete": return todos.filter(t => t.isDone);
+      case "incomplete": return todos.filter(t => !t.isDone);
+      case "highPriority": return todos.filter(t => t.priority >= 4);
+      default: return todos;
+    }
+  }, [todos, activeFilter]);
 
   return (
     <AppStyled>
-      <SidePanel />
-      <TodoPanel todos={data}/>
+      <SidePanel activeFilter={activeFilter} onSelectFilter={setActiveFilter}/>
+      <TodoPanel todos={filteredTodos}/>
     </AppStyled>
+    
   )
 }
 
 const AppStyled = styled.div`
-  padding: 30px 15px;
+  padding: 20px 10px 20px 0px;
   display: flex;
-  gap: 15px;
+  gap: 10px;
   height: 100%;
+  width: 100%;
   transition: all 0.3s ease-in-out; 
 
   .grid {

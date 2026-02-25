@@ -1,19 +1,20 @@
 import styled from "styled-components";
-import themes from '../utils/themes';
+import { PlusIcon } from "@heroicons/react/24/outline";
 
-//Todo: should we define a Todo object as a type?
 interface Props {
+    createTodoModalOpener: () => void
 }
 
-function TodoPanelHeader() {
-
-    //todo: make this swappable for themes
-    const theme = themes[0];
+function TodoPanelHeader({createTodoModalOpener}: Props) {
 
     return (
-        <TodoPanelHeaderStyled theme={theme}>
-            <div className="header-area">
-                <h1>Tasks</h1>
+        <TodoPanelHeaderStyled>
+            <h1>Tasks</h1>
+            <div className='flex justify-end'>
+                <button className="add-todo-button" onClick={() => createTodoModalOpener()}>
+                    <PlusIcon className="h-6 w-6 text-gray-500" />
+                    Add
+                </button>
             </div>
         </TodoPanelHeaderStyled>
     )
@@ -21,26 +22,34 @@ function TodoPanelHeader() {
 }
 
 const TodoPanelHeaderStyled = styled.div`
-    .header-area {
-        height: 60px;
+    height: 60px;
+    display: flex;
+
+    button {
+        display: flex;
+        font-size: 16px;
+        cursor: pointer;
+        background-color: ${(props) => props.theme.borderColor2};
+        box-shadow: ${(props) => props.theme.shadow7};
+        border: 2px solid ${(props) => props.theme.borderColor2};
+        padding: 5px 15px 5px 10px;
+        height: fit-content;
+        border-radius: 7px;
+    }
+
+    button:hover {
+        border-color: #646cff;
+        background-color: ${(props) => props.theme.colorGrey5};
+        color: ${(props) => props.theme.colorGrey1};
+        transition: all 0.35s ease-in-out;
     }
         
-    .header-area h1 {
+    >h1 {
         font-size: clamp(1.5rem, 2vw, 2rem);
         font-weight: 800;
         position: relative;
         line-height: 100%;
-
-        &::after {
-            content: "";
-            position: absolute;
-            bottom: -0.5rem;
-            left: 0;
-            width: 3rem;
-            height: 0.2rem;
-            background-color: ${(props) => props.theme.colorPrimaryGreen}; 
-            border-radius: 0.5rem;
-        }
+        width: 100%;
     }
 `;
 

@@ -1,0 +1,1 @@
+export type TodoFilter = "all" | "complete" | "incomplete" | "highPriority";

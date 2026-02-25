@@ -1,21 +1,53 @@
 import styled from "styled-components";
-import themes from '../utils/themes';
 import TodoPanelHeader from "./TodoPanelHeader";
 import TodoPanelBody from "./TodoPanelBody";
+import type { CreateTodoInput, Todo, UpdateTodoInput } from "../api/todoApiModels";
+import CreateTodoModal from "./CreateTodoModal";
+import { useState } from "react";
+import { useAppDispatch } from "../hooks";
+import { createTodoThunk, updateTodoThunk } from "../todoSlice";
+import UpdateTodoModal from "./UpdateTodoModal";
 
 interface Props {
-    todos: Array<object>;
+    todos: Array<Todo>;
 }
 
 function TodoPanel({todos}: Props) {
 
-    //todo: make this swappable for themes
-    const theme = themes[0];
+    const [isCreateOpen, setIsCreateOpen] = useState(false),
+        [isUpdateOpen, setIsUpdateOpen] = useState(false),
+        [updatingTodo, setUpdatingTodo] = useState<Todo | null>(null);
+
+    const dispatch = useAppDispatch();
+
+    async function handleCreateTodo({title, description, priority}: CreateTodoInput) {
+        await dispatch(createTodoThunk({title, description, priority})).unwrap();
+    }
+
+    async function handleUpdateTodo(id: string, {title, description, priority, isDone}: UpdateTodoInput) {
+        await dispatch(updateTodoThunk({id, payload: {title, description, priority, isDone}})).unwrap();
+    }
+
+    const openCreate = () => setIsCreateOpen(true);
+    const closeCreate = () => setIsCreateOpen(false);
+    const openUpdate = (toUpdate: Todo) => { setIsUpdateOpen(true); setUpdatingTodo(toUpdate); }
+    const closeUpdate = () => { setIsUpdateOpen(false); setUpdatingTodo(null); }
 
     return (
-        <TodoPanelStyled theme={theme}>
-            <TodoPanelHeader />
-            <TodoPanelBody todos={todos} />
+        <TodoPanelStyled>
+            <TodoPanelHeader createTodoModalOpener={openCreate}/>
+            <TodoPanelBody todos={todos} updateTodoModalOpener={openUpdate}/>
+            <CreateTodoModal
+                isOpen={isCreateOpen}
+                onClose={closeCreate}
+                onSubmit={handleCreateTodo}
+            />
+            {updatingTodo && <UpdateTodoModal 
+                isOpen={isUpdateOpen}
+                onClose={closeUpdate}
+                onSubmit={handleUpdateTodo}
+                updatingTodo={updatingTodo}
+            />}
         </TodoPanelStyled>
     )
 }
@@ -27,12 +59,11 @@ const TodoPanelStyled = styled.div`
     background-color: ${(props) => props.theme.colorBg2};
     border: 2px solid ${(props) => props.theme.borderColor2};
     border-radius: 1rem;
-    overflow-y: auto;
     height: 100%;
-
-    &::-webkit-scrollbar {
-        width: 0.5rem;
-    }
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
 
     .tasks {
         margin: 2rem 0;
