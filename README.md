@@ -6,6 +6,13 @@ This repository contains a full-stack Todo application with:
 - `server/` — ASP.NET Core API backend
 - `server/api.Tests/` — backend integration test suite
 
+## Scope and Deployment Context
+
+This project is currently scoped for local development and testing.
+
+Current defaults, scripts, and configuration are optimized for running the client and server locally rather than production deployment.  
+Production deployment configurability requirements are tracked in the `## Future Work` section (see Client-Side, Server-Side, and Deployment / DevOps items).
+
 ## Architecture Overview
 
 ### Client (`client/`)
@@ -112,17 +119,23 @@ dotnet test server/api.Tests/api.Tests.csproj
 4. Optimize client bundle output to address current large-chunk warning (>500kB).
 5. Implement granular per-operation API lifecycle state for create/update/toggle/delete flows (`pending/loading/succeeded/failed`) (partially implemented; shared status/error currently exists).
 6. Implement standardized column sizing and potentially resizing of columns.
+7. Add production-ready client environment configuration strategy (document required `VITE_*` variables and provide `.env.example` for local/prod parity).
 
 ### Server-Side Work
 1. Implement JWT/session authentication for protected API access.
 2. Standardize API error message text per endpoint/action for clearer, more specific toasts (partially implemented; complete by defining and applying a consistent message contract across all API error paths).
 3. Introduce a dedicated `NotFound` exception type instead of using `ValidationException` for missing resources.
 4. Implement stale/update conflict behavior.
+5. Add production-ready server configuration via environment overrides for connection strings, CORS origins, and runtime settings (with documented required keys and safe defaults).
+
+### Deployment / DevOps Work
+1. Define deployment profiles/environments (`Development`, `Staging`, `Production`) with explicit config contracts for client and server.
+2. Add deployment documentation covering required environment variables, secret handling, startup commands, and health checks.
+3. Enforce the client run gate through CI and branch protection (currently documented as local convention only).
 
 ### Testing Work
 1. Add corresponding server-side integration test coverage for stale/update conflict behavior.
-2. Enforce the client run gate through CI and branch protection (currently documented as local convention only).
-
+2. Add a smoke check in CI that validates required production config keys are present (without exposing secret values).
 ## Notes
 
 - This root README is the cross-cutting project entrypoint.
