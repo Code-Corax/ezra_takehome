@@ -1,73 +1,111 @@
-# React + TypeScript + Vite
+# Client (Frontend)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React + TypeScript frontend for the Todo application.
 
-Currently, two official plugins are available:
+## Overview
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+This client provides:
 
-## React Compiler
+- Todo list display
+- Filtering (`All Tasks`, `Completed`, `Incomplete`, `High Priority`)
+- Create todo modal
+- Update todo modal (including `isDone`)
+- Toggle completion
+- Delete todo
+- Global error toast handling for API failures
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Tech Stack
 
-## Expanding the ESLint configuration
+- React 19
+- TypeScript
+- Vite
+- Redux Toolkit + React Redux
+- Chakra UI (components/toast primitives)
+- styled-components (theme usage)
+- Axios (API client)
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Scripts
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+Run from repo root with prefix:
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm run dev --prefix client
+npm run build --prefix client
+npm run test --prefix client
+npm run test:watch --prefix client
+npm run lint --prefix client
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Or from inside `client/`:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm run dev
+npm run build
+npm run test
+npm run test:watch
+npm run lint
 ```
+
+## Environment
+
+Client API base URL is read from:
+
+- `VITE_API_BASE_URL`
+
+Fallback (if unset): `http://localhost:5107`
+
+Create `client/.env` (or `.env.local`) if needed:
+
+```env
+VITE_API_BASE_URL=http://localhost:5107
+```
+
+## Running Locally
+
+1. Start server API first (from `server/`).
+2. Start client dev server:
+
+```bash
+npm run dev --prefix client
+```
+
+Default Vite URL is typically:
+
+- `http://localhost:5173`
+
+## API Integration Notes
+
+The client expects these server endpoints:
+
+- `GET /todos`
+- `POST /todos`
+- `PUT /todos/{id}`
+- `PATCH /todos/{id}`
+- `DELETE /todos/{id}`
+
+## Testing
+
+Client test suite uses:
+
+- Vitest
+- jsdom
+- Testing Library
+- MSW
+
+Detailed test suite documentation:
+
+- `client/src/test/README.md`
+
+### Run Gate (local convention)
+
+Before merge, run:
+
+```bash
+npm run test --prefix client
+npm run build --prefix client
+```
+
+## Notes
+
+- This project started from a Vite scaffold and has been customized for the take-home scope.
+- Some non-blocking test/runtime warnings may be listed in the project README under Future Work.
